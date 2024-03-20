@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:flutter/material.dart';
 
 class Course {
   final int id;
@@ -7,8 +8,9 @@ class Course {
   final String day;
   final String startTime;
   final String endTime;
-  final int availablePlaces;
+  final int? availablePlaces;
   final String status;
+  final bool isParticular;
 
   Course({
     required this.id,
@@ -17,8 +19,10 @@ class Course {
     required this.day,
     required this.startTime,
     required this.endTime,
-    required this.availablePlaces,
+    this.availablePlaces,
     required this.status,
+    this.isParticular = false,
+
   });
 
   factory Course.fromJson(Map<String, dynamic> json) {
@@ -40,4 +44,44 @@ class Course {
       status: json['status'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    DateFormat outputFormat = DateFormat.Hms(); // Format 24 heures
+    String formattedStartTime = outputFormat.format(DateFormat.Hm().parse(startTime));
+    String formattedEndTime = outputFormat.format(DateFormat.Hm().parse(endTime));
+
+    return {
+      'id': id,
+      'nom': name,
+      'description': description,
+      'jour': day,
+      'heureDebut': formattedStartTime,
+      'heureFin': formattedEndTime,
+      'placesDisponibles': availablePlaces,
+      'status': status,
+    };
+  }
+
+}
+
+class ParticularCourse extends Course {
+
+  ParticularCourse({
+    required int id,
+    required String name,
+    required String description,
+    required String day,
+    required String startTime,
+    required String endTime,
+    required String status,
+  }) : super(
+    id: id,
+    name: name,
+    description: description,
+    day: day,
+    startTime: startTime,
+    endTime: endTime,
+    status: status,
+    isParticular: true,
+  );
 }

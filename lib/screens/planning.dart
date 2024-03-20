@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:planning_coaching/models/course.dart';
 import 'package:planning_coaching/services/api_service.dart';
+import 'package:planning_coaching/screens/create_course_screen.dart';
+import 'package:planning_coaching/screens/edit_course_screen.dart';
 
 class PlanningScreen extends StatefulWidget {
   @override
@@ -37,17 +39,47 @@ class _PlanningScreenState extends State<PlanningScreen> {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: Text('Inscription'),
-          content: Text('Vous avez sélectionné le cours ${course.name} le ${course.day} de ${course.startTime} à ${course.endTime}.'),
-          actions: <Widget>[
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          elevation: 6,
+          child: Container(
+            padding: EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text('Vous avez sélectionné le cours ${course.name}.'),
+                if (course.description != null && course.description!.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text('Description: ${course.description}'),
+                  ),
+                Text('Jour: ${course.day}'),
+                Text('Horaires: ${course.startTime} à ${course.endTime}'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    TextButton(
+                      child: Text('Fermer'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    TextButton(
+                      child: Text('Modifier'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) => EditCourseScreen(course: course)),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
+          ),
         );
       },
     );
@@ -60,7 +92,14 @@ class _PlanningScreenState extends State<PlanningScreen> {
         title: const Text('Planning'),
         actions: <Widget>[
           TextButton(
-            child: Text('Open All'),
+              child: Text('Créer un cours'),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => CreateCourseScreen()),
+                );
+              }),
+          TextButton(
+            child: Text('Ouvrir Tout'),
             onPressed: () {
               setState(() {
                 _isOpen = List<bool>.filled(_isOpen.length, true);
@@ -68,7 +107,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
             },
           ),
           TextButton(
-            child: Text('Collapse All'),
+            child: Text('Fermer Tout'),
             onPressed: () {
               setState(() {
                 _isOpen = List<bool>.filled(_isOpen.length, false);
@@ -101,10 +140,13 @@ class _PlanningScreenState extends State<PlanningScreen> {
                     },
                     title: Text(day),
                     children: courses.map((course) {
-                      return ListTile(
-                        title: Text(course.name),
-                        subtitle: Text('${course.startTime} à ${course.endTime}'),
-                        onTap: () => _showDialog(course),
+                      return Container(
+                        color: course.isParticular ? Colors.orange[200] : null,
+                        child: ListTile(
+                          title: Text(course.name),
+                          subtitle: Text('${course.startTime} à ${course.endTime}'),
+                          onTap: () => _showDialog(course),
+                        ),
                       );
                     }).toList(),
                   ),

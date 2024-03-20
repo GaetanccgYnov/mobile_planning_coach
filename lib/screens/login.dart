@@ -17,8 +17,8 @@ class _LoginPageState extends State<LoginPage> {
     final String password = _passwordController.text.trim();
 
     // Stockez les informations d'identification
-    await prefs.setString('username', username);
-    await prefs.setString('password', password);
+    await prefs.setString('email', username);
+    await prefs.setString('mot de passe', password);
 
     // Redirigez vers la page suivante
     Navigator.pushReplacement(
@@ -31,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login'),
+        title: Text('Connexion'),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -40,17 +40,17 @@ class _LoginPageState extends State<LoginPage> {
           children: <Widget>[
             TextField(
               controller: _usernameController,
-              decoration: InputDecoration(labelText: 'Username'),
+              decoration: InputDecoration(labelText: 'Email'),
             ),
             TextField(
               controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
+              decoration: InputDecoration(labelText: 'Mot de passe'),
               obscureText: true,
             ),
             SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: _login,
-              child: Text('Login'),
+              child: Text('Se connecter'),
             ),
           ],
         ),
