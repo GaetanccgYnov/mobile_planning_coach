@@ -3,6 +3,7 @@ import 'package:planning_coaching/models/course.dart';
 import 'package:planning_coaching/services/api_service.dart';
 import 'package:planning_coaching/screens/create_course_screen.dart';
 import 'package:planning_coaching/screens/edit_course_screen.dart';
+import 'package:flutter/cupertino.dart';
 
 class PlanningScreen extends StatefulWidget {
   @override
@@ -49,14 +50,32 @@ class _PlanningScreenState extends State<PlanningScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Text('Vous avez sélectionné le cours ${course.name}.'),
+                Text(
+                  '${course.name}',
+                  style: TextStyle(
+                    fontSize: 20.0, // Make the text larger
+                    fontWeight: FontWeight.bold, // Make the text bold
+                  ),
+                ),
                 if (course.description != null && course.description!.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0),
-                    child: Text('Description: ${course.description}'),
+                    child: Text('${course.description}'),
                   ),
-                Text('Jour: ${course.day}'),
-                Text('Horaires: ${course.startTime} à ${course.endTime}'),
+                Row(
+                  children: <Widget>[
+                    Icon(Icons.calendar_today), // Icon for day
+                    SizedBox(width: 8.0), // Space between icon and text
+                    Text('${course.day}'),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Icon(Icons.access_time), // Icon for time
+                    SizedBox(width: 8.0), // Space between icon and text
+                    Text('${course.startTime} à ${course.endTime}'),
+                  ],
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
@@ -89,7 +108,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Planning'),
+        title: Icon(CupertinoIcons.calendar),
         actions: <Widget>[
           TextButton(
               child: Text('Créer un cours'),
@@ -98,16 +117,16 @@ class _PlanningScreenState extends State<PlanningScreen> {
                   MaterialPageRoute(builder: (context) => CreateCourseScreen()),
                 );
               }),
-          TextButton(
-            child: Text('Ouvrir Tout'),
+          IconButton(
+            icon: Icon(CupertinoIcons.arrow_down),
             onPressed: () {
               setState(() {
                 _isOpen = List<bool>.filled(_isOpen.length, true);
               });
             },
           ),
-          TextButton(
-            child: Text('Fermer Tout'),
+          IconButton(
+            icon: Icon(CupertinoIcons.arrow_up),
             onPressed: () {
               setState(() {
                 _isOpen = List<bool>.filled(_isOpen.length, false);
@@ -116,45 +135,52 @@ class _PlanningScreenState extends State<PlanningScreen> {
           ),
         ],
       ),
-      body: FutureBuilder<Map<String, List<Course>>>(
-        future: _coursesFuture?.then(groupCoursesByDay),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Erreur: ${snapshot.error}'));
-          } else {
-            return ListView.builder(
-              itemCount: snapshot.data!.keys.length,
-              itemBuilder: (context, index) {
-                final day = snapshot.data!.keys.elementAt(index);
-                final courses = snapshot.data![day]!;
-                return Container(
-                  color: index % 2 == 0 ? Colors.grey[200] : Colors.white,
-                  child: ExpansionTile(
-                    initiallyExpanded: _isOpen[index],
-                    onExpansionChanged: (isOpen) {
-                      setState(() {
-                        _isOpen[index] = isOpen;
-                      });
-                    },
-                    title: Text(day),
-                    children: courses.map((course) {
-                      return Container(
-                        color: course.isParticular ? Colors.orange[200] : null,
-                        child: ListTile(
-                          title: Text(course.name),
-                          subtitle: Text('${course.startTime} à ${course.endTime}'),
-                          onTap: () => _showDialog(course),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                );
-              },
-            );
-          }
-        },
+      body: Container(
+        margin: EdgeInsets.all(10.0),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: FutureBuilder<Map<String, List<Course>>>(
+          future: _coursesFuture?.then(groupCoursesByDay),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Erreur: ${snapshot.error}'));
+            } else {
+              return ListView.builder(
+                itemCount: snapshot.data!.keys.length,
+                itemBuilder: (context, index) {
+                  final day = snapshot.data!.keys.elementAt(index);
+                  final courses = snapshot.data![day]!;
+                  return Container(
+                    color: index % 2 == 0 ? Colors.grey[200] : Colors.white,
+                    child: ExpansionTile(
+                      initiallyExpanded: _isOpen[index],
+                      onExpansionChanged: (isOpen) {
+                        setState(() {
+                          _isOpen[index] = isOpen;
+                        });
+                      },
+                      title: Text(day),
+                      children: courses.map((course) {
+                        return Container(
+                          color: course.isParticular ? Colors.orange[200] : null,
+                          child: ListTile(
+                            title: Text(course.name),
+                            subtitle: Text('${course.startTime} à ${course.endTime}'),
+                            onTap: () => _showDialog(course),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  );
+                },
+              );
+            }
+          },
+        ),
       ),
     );
   }

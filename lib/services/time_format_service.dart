@@ -21,4 +21,9 @@ class TimeFormatService {
     final minutes = time.minute.toString().padLeft(2, '0');
     return '$hours:$minutes';
   }
+
+  TimeOfDay timeOfDayFromString(String timeString) {
+    final timeParts = timeString.split(':');
+    return TimeOfDay(hour: int.parse(timeParts[0]), minute: int.parse(timeParts[1]));
+  }
 }

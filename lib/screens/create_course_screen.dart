@@ -71,80 +71,91 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
       appBar: AppBar(
         title: Text('Créer un cours'),
       ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          children: <Widget>[
-            TextFormField(
-              decoration: InputDecoration(labelText: 'Nom'),
-              onSaved: (value) => _name = value!,
-            ),
-            TextFormField(
-              decoration: InputDecoration(labelText: 'Description'),
-              onSaved: (value) => _description = value!,
-            ),
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(labelText: 'Jour'),
-              value: _selectedDay,
-              items: _daySelectorService.daysOfWeek.keys.map((String day) {
-                return DropdownMenuItem<String>(
-                  value: day,
-                  child: Text(day),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedDay = newValue!;
-                });
-              },
-              onSaved: (value) => _selectedDay = value!,
-            ),
-            TextFormField(
-              readOnly: true,
-              decoration: InputDecoration(labelText: 'Début'),
-              onTap: () => _selectTime(context, true),
-              controller: TextEditingController(text: _timeFormatService.formatTimeOfDay24(_startTime)),
-              onSaved: (value) => _startTime,
-            ),
-            TextFormField(
-              readOnly: true,
-              decoration: InputDecoration(labelText: 'Fin'),
-              onTap: () => _selectTime(context, false),
-              controller: TextEditingController(text: _timeFormatService.formatTimeOfDay24(_endTime)),
-              onSaved: (value) => _endTime,
-            ),
-            ListTile(
-              title: const Text('Course'),
-              leading: Radio<bool>(
-                value: false,
-                groupValue: isParticularCourse,
-                onChanged: (bool? value) {
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            children: <Widget>[
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Nom'),
+                onSaved: (value) => _name = value!,
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Description'),
+                onSaved: (value) => _description = value!,
+              ),
+              DropdownButtonFormField<String>(
+                decoration: InputDecoration(labelText: 'Jour'),
+                value: _selectedDay,
+                items: _daySelectorService.daysOfWeek.keys.map((String day) {
+                  return DropdownMenuItem<String>(
+                    value: day,
+                    child: Text(day),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
                   setState(() {
-                    isParticularCourse = value!;
+                    _selectedDay = newValue!;
                   });
                 },
+                onSaved: (value) => _selectedDay = value!,
               ),
-            ),
-            ListTile(
-              title: const Text('ParticularCourse'),
-              leading: Radio<bool>(
-                value: true,
-                groupValue: isParticularCourse,
-                onChanged: (bool? value) {
-                  setState(() {
-                    isParticularCourse = value!;
-                  });
-                },
+              TextFormField(
+                readOnly: true,
+                decoration: InputDecoration(labelText: 'Début'),
+                onTap: () => _selectTime(context, true),
+                controller: TextEditingController(text: _timeFormatService.formatTimeOfDay24(_startTime)),
+                onSaved: (value) => _startTime,
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 20.0),
-              child: ElevatedButton(
-                child: Text('Sauvegarder'),
-                onPressed: _submit,
+              TextFormField(
+                readOnly: true,
+                decoration: InputDecoration(labelText: 'Fin'),
+                onTap: () => _selectTime(context, false),
+                controller: TextEditingController(text: _timeFormatService.formatTimeOfDay24(_endTime)),
+                onSaved: (value) => _endTime,
               ),
-            ),
-          ],
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: ListTile(
+                      title: const Text('Cours collectif'),
+                      leading: Radio<bool>(
+                        value: false,
+                        groupValue: isParticularCourse,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            isParticularCourse = value!;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: ListTile(
+                      title: const Text('Cours particulier'),
+                      leading: Radio<bool>(
+                        value: true,
+                        groupValue: isParticularCourse,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            isParticularCourse = value!;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 20.0),
+                child: ElevatedButton(
+                  child: Text('Sauvegarder'),
+                  onPressed: _submit,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
